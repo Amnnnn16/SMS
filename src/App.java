@@ -2,10 +2,19 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class App {
-    static void display() throws Exception
+    Connection con;
+    Statement stml;
+
+    static Scanner sc =new Scanner(System.in);
+    App() throws SQLException,ClassNotFoundException
     {
-        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/oop_jdbc", "root", "");
-        Statement stml=con.createStatement();
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con=DriverManager.getConnection("jdbc:mysql://localhost:3306/oop_jdbc", "root", "");
+        stml=con.createStatement();
+    }
+    void display() throws SQLException,Exception
+    {
+        
         ResultSet rs=stml.executeQuery("select * from students;");
         while(rs.next())
         {
@@ -14,11 +23,8 @@ public class App {
             System.out.println(rs.getInt(3));
         }
     }
-    static void insert() throws Exception
+    void insert() throws SQLException,Exception
     {
-        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/oop_jdbc", "root", "");
-        Statement stml=con.createStatement();
-        Scanner sc =new Scanner(System.in);
         System.out.println("Enter SAP -");
         int sap=sc.nextInt();
         sc.nextLine();
@@ -31,19 +37,97 @@ public class App {
         stml.executeUpdate(query);
         System.out.println("Updated Successfully...");
     }
-    public static void main(String[] args) throws Exception {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        while(true)
+    static void mainmenu()
+    {
+        System.out.println("************ Main - Menu *************");
+        System.out.println("1. Insert");
+        System.out.println("2. Display");
+        System.out.println("3. Delete");
+        System.out.println("4. Update");
+        System.out.println("5. Exit");
+    }
+    boolean choose(int choice) throws SQLException,Exception
+    {
+        switch(choice)
         {
-            try{
+            case 1:
+                insert();
+                break;
+            case 2:
                 display();
                 break;
-            }
-            catch(Exception e)
-            {
-                System.out.println(e.getMessage());
+            case 3:
+                delete();
                 break;
+            case 4:
+                update();
+                break;
+            case 5:
+                return false;
+            default:
+                System.out.println("Invalid Choice...Try Again....");
+        }
+        return true;
+    }
+    void update() throws SQLException,NumberFormatException
+    {
+        System.out.print("Enter SAP ID ->");
+        int sap=sc.nextInt();
+        sc.nextLine();
+        System.out.println("Enter new Percentage ->");
+        int per=sc.nextInt();
+        sc.nextLine();
+        stml.executeUpdate("update students set Percentage="+per+" where SAP_ID="+sap+";");
+        System.out.println("Value Updated....");
+    }
+    void delete() throws Exception,SQLException
+    {
+        System.out.print("Enter SAP ID ->");
+        int sap=sc.nextInt();
+        sc.nextLine();
+        stml.executeUpdate("delete from students where SAP_ID="+sap+";");
+        System.out.println("deleted successfully...");
+    }
+    public static void main(String[] args) throws Exception {
+        try{
+            App obj=new App();
+            while(true)
+            {
+                try{
+                    System.out.println();
+                    mainmenu();
+                    System.out.print("Enter your Choice ->");
+                    int choice=sc.nextInt();
+                    sc.nextLine();
+                    boolean check=obj.choose(choice);
+                    if(!check)
+                        return;
+                    System.out.println("Press any key to continue....");
+                    sc.nextLine();
+                }
+                catch(SQLException e)
+                {
+                    System.out.println(e.getMessage());
+                    break;
+                }
+                catch(Exception e)
+                {
+                    System.out.print("Technical fault occured -> ");
+                    System.out.println(e.getMessage());
+                }
             }
+        }
+        catch(SQLException sqle)
+        {
+            System.out.println("Connectivity problem with database.....");
+        }
+        catch(ClassNotFoundException cnfe)
+        {
+            System.out.println("Connectivity Problem with Mysql......");
+        }
+        finally
+        {
+            System.out.println("sorry for incovinence.....");
         }
     }
 }

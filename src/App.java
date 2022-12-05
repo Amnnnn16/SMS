@@ -8,8 +8,8 @@ public class App {
     static Scanner sc =new Scanner(System.in);
     App() throws SQLException,ClassNotFoundException
     {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        con=DriverManager.getConnection("jdbc:mysql://localhost:3306/oop_jdbc", "root", "");
+        Class.forName("com.mysql.jdbc.Driver");
+        con=DriverManager.getConnection("jdbc:mysql://localhost:3306/oop_jdbc", "root", "QWErty@123");
         stml=con.createStatement();
     }
     void display() throws SQLException,Exception
